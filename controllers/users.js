@@ -2,10 +2,11 @@
 const Users = require("../models/users");
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 // Routes
 router.post("/signup", (req, res) => {
-  Users.find({ email: req.body.email })
+  Users.findOne({ email: req.body.email })
     .count()
     .then(number => {
       if (number != 0) {
@@ -14,7 +15,9 @@ router.post("/signup", (req, res) => {
         let encrypted = bcrypt.hashSync(req.body.password, 10);
         req.body.password = encrypted;
         Users.create(req.body).then(user => {
-          res.send(user);
+          let plain_user = user.toObject();
+          let token = jwt.sign(plain_user, process.env.SECRET);
+          res.send(token);
         });
       }
     });
