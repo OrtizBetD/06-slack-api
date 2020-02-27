@@ -23,7 +23,17 @@ router.post("/signup", (req, res) => {
     });
 });
 
-router.post("/login", (req, res) => {});
+router.post("/login", (req, res) => {
+  Users.findOne({ email: req.body.email })
+    .count()
+    .then(number => {
+      if (number == 0) {
+        res.send("email not found");
+      } else {
+        res.send("email exists");
+      }
+    });
+});
 
 // Export
 module.exports = router;
