@@ -17,22 +17,27 @@ router.post("/signup", (req, res) => {
         Users.create(req.body).then(user => {
           let plain_user = user.toObject();
           let token = jwt.sign(plain_user, process.env.SECRET);
-          res.send(token);
+          res.send(token).catch(err => console.log(err));
         });
       }
     });
 });
 
 router.post("/login", (req, res) => {
-  Users.findOne({ email: req.body.email })
-    .count()
-    .then(number => {
-      if (number == 0) {
-        res.send("email not found");
+  Users.findOne({ email: req.body.email }).then(user => {
+    if (!user) {
+      res.send("email not found");
+    } else {
+      let match = bcrypt.compareSync(req.body.password, user.password);
+      if (match) {
+        let plain_user = user.toObject();
+        let token = jwt.sign(plain_user, process.env.SECRET);
+        res.send(token).catch(err => console.log(err));
       } else {
-        res.send("email exists");
+        res.send("invalid password");
       }
-    });
+    }
+  });
 });
 
 // Export
