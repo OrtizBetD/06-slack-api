@@ -5,11 +5,13 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 // Routes
+
+//define token
+//let token = req.headers.authorization.split(" ")[1];
 router.post("/", (req, res) => {
   Messages.create(req.body)
     .then(message => {
       let token = req.headers.authorization.split(" ")[1];
-      console.log("token", token);
       let user = jwt.verify(token, process.env.SECRET);
       //  console.log("user", user);
       message.user = user._id;
@@ -22,9 +24,13 @@ router.get("/", (req, res) => {
   Messages.find(req.query)
     .populate("user", "-password")
     .then(messages => {
-      res.send(messages);
+      let token = req.headers.authorization.split(" ")[1];
+      let message_info = jwt.verify(token, process.env.SECRET);
+      if (message_info) {
+        res.send(messages);
+      }
     })
-    .catch(err => res.send(err));
+    .catch(err => res.send("not authorized"));
 });
 
 // Export
