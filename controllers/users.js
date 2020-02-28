@@ -17,6 +17,7 @@ router.post("/signup", (req, res) => {
         Users.create(req.body).then(user => {
           let plain_user = user.toObject();
           let token = jwt.sign(plain_user, process.env.SECRET);
+          console.log(token);
           res.send(token).catch(err => console.log(err));
         });
       }
@@ -32,6 +33,7 @@ router.post("/login", (req, res) => {
       if (match) {
         let plain_user = user.toObject();
         let token = jwt.sign(plain_user, process.env.SECRET);
+        console.log(token);
         res.send(token).catch(err => console.log(err));
       } else {
         res.send("invalid password");
