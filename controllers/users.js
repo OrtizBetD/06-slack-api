@@ -6,22 +6,21 @@ const jwt = require("jsonwebtoken");
 
 // Routes
 router.post("/signup", (req, res) => {
-  Users.findOne({ email: req.body.email })
-    .count()
-    .then(number => {
-      if (number != 0) {
-        res.send("Email already exists");
-      } else {
-        let encrypted = bcrypt.hashSync(req.body.password, 10);
-        req.body.password = encrypted;
-        Users.create(req.body).then(user => {
-          let plain_user = user.toObject();
-          let token = jwt.sign(plain_user, process.env.SECRET);
-          console.log(token);
-          res.send(token).catch(err => console.log(err));
-        });
-      }
-    });
+  Users.findOne({ email: req.body.email }).then(user => {
+    if (user) {
+      console.log("user", user);
+      res.send("Email already exists");
+    } else {
+      let encrypted = bcrypt.hashSync(req.body.password, 10);
+      req.body.password = encrypted;
+      Users.create(req.body).then(user => {
+        let plain_user = user.toObject();
+        let token = jwt.sign(plain_user, process.env.SECRET);
+        console.log(token);
+        res.send(token).catch(err => console.log(err));
+      });
+    }
+  });
 });
 
 router.post("/login", (req, res) => {

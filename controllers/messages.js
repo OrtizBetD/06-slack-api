@@ -12,6 +12,7 @@ router.post("/", (req, res) => {
   Messages.create(req.body)
     .then(message => {
       let token = req.headers.authorization.split(" ")[1];
+      console.log("token_mes", token);
       let user = jwt.verify(token, process.env.SECRET);
       //  console.log("user", user);
       message.user = user._id;
@@ -21,7 +22,11 @@ router.post("/", (req, res) => {
     .catch(err => res.send(err));
 });
 router.get("/", (req, res) => {
-  let token = req.headers.authorization.split(" ")[1];
+  //console.log("headers", req.headers.authorization);
+  //  let token = req.headers.authorization.split(" ")[1];
+  let token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZTU4YWViNWRiYWUzMzQ5ODgwMjI4MDkiLCJuYW1lIjoiU3RlZmFubyIsImVtYWlsIjoic2lsdkBnbWFpbC5jb20iLCJwYXNzd29yZCI6IiQyYiQxMCRmejJzSzM2MGdKWkZVL29LZGxUL2FlbzFNYi5yUkkzUzdGS0dsc1d2Y2JBcER3dEhjOVZEUyIsIl9fdiI6MCwiaWF0IjoxNTgyODcwMTk3fQ.C4bZlkH_UwaAP3PzhLkbqZbV5hKpgPEuc7CAkqR4QCg";
+  console.log("token", token);
   jwt.verify(token, process.env.SECRET, (err, token_data) => {
     console.log(token_data);
     if (token_data) {
