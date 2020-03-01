@@ -8,10 +8,14 @@ const jwt = require("jsonwebtoken");
 router.post("/signup", (req, res) => {
   Users.findOne({ email: req.body.email })
     .then(user => {
-      console.log("bodyemail", req.body.name);
+      //  console.log("bodyemail", req.body.name);
+      console.log(user);
       if (user) {
         res.send("Email already exists");
       } else {
+        if (!req.body.name || !req.body.email || !req.body.password) {
+          res.send("All fields are required");
+        }
         let encrypted = bcrypt.hashSync(req.body.password, 10);
         req.body.password = encrypted;
         Users.create(req.body).then(user => {
@@ -28,7 +32,9 @@ router.post("/signup", (req, res) => {
 router.post("/login", (req, res) => {
   Users.findOne({ email: req.body.email })
     .then(user => {
-      if (!user) {
+      if (!req.body.email || !req.body.password) {
+        res.send("All fields are required");
+      } else if (!user) {
         res.send("email not found");
       } else {
         let match = bcrypt.compareSync(req.body.password, user.password);
