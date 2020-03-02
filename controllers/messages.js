@@ -1,5 +1,6 @@
 // Require
 const Messages = require("../models/messages");
+const Users = require("../models/users");
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -9,17 +10,25 @@ const jwt = require("jsonwebtoken");
 //define token
 //let token = req.headers.authorization.split(" ")[1];
 router.post("/", (req, res) => {
-  Messages.create(req.body)
-    .then(message => {
-      let token = req.headers.authorization.split(" ")[1];
-      console.log("token_mes", token);
-      let user = jwt.verify(token, process.env.SECRET);
-      //  console.log("user", user);
-      message.user = user._id;
-      //  console.log("user", message.user);
-      res.send(message);
-    })
-    .catch(err => res.send(err));
+  let token = req.headers.authorization.split(" ")[1];
+  let data = jwt.verify(token, process.env.SECRET);
+  Users.findById(data._id).then(user => {
+    if (user.password == data.password) {
+      req.body.user = user._id;
+      Messages.create(req.body)
+        .then(message => {
+          console.log("token_mes", token);
+          let user = jwt.verify(token, process.env.SECRET);
+          //  console.log("user", user);
+          message.user = user._id;
+          //  console.log("user", message.user);
+          res.send(message);
+        })
+        .catch(err => res.send(err));
+    } else {
+      res.send("not authorized");
+    }
+  });
 });
 router.get("/", (req, res) => {
   console.log("headers", req.headers.authorization);
