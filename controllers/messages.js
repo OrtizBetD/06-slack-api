@@ -4,6 +4,14 @@ const Users = require("../models/users");
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const multer = require("multer");
+//SETTING STORAGE type
+const upload = multer({ storage: multer.memoryStorage() });
+
+const DataUri = require("datauri");
+const path = require("path");
+
+const cloudinary = require("cloudinary");
 
 // Routes
 

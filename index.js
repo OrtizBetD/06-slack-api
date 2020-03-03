@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
+const multer = require("multer");
 require("./db");
 
 // App
