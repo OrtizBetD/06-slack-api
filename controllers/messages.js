@@ -14,10 +14,11 @@ const path = require("path");
 const cloudinary = require("cloudinary");
 
 // Routes
-
+// upload.single("file"),
 //define token
 //let token = req.headers.authorization.split(" ")[1];
 router.post("/", (req, res) => {
+  //console.log("file>>", req.file);
   let token = req.headers.authorization.split(" ")[1];
   let data = jwt.verify(token, process.env.SECRET);
   Users.findById(data._id).then(user => {
@@ -30,7 +31,11 @@ router.post("/", (req, res) => {
           //  console.log("user", user);
           message.user = user._id;
           //  console.log("user", message.user);
-          res.send(message);
+          Messages.findById(message._id)
+            .populate("user", "-password")
+            .then(messages => {
+              res.send(messages);
+            });
         })
         .catch(err => res.send(err));
     } else {
